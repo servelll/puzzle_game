@@ -22,19 +22,42 @@ class Chip:
     def can_move(self, target):
         if target.chip or self.cell.board.is_victory:
             return False
-        if self.cell.x - target.x == 0:
-            i = abs(target.y - self.cell.y) // (target.y - self.cell.y)
-            for cell in self.cell.board.cells[target.x][self.cell.y + i: target.y: i]:
-                if cell.chip:
-                    return False
-            return True
-        if self.cell.y - target.y == 0:
-            d = target.x - self.cell.x
-            sign = int(abs(d) / d)
-            for i in range(1, abs(d)):
-                if self.cell.board.get_cell(target.y, self.cell.x + i * sign).chip:
-                    return False
-            return True
+
+        m = self.cell.board.get_cell(self.cell.y - 1 if target.y < self.cell.y else
+                                     (self.cell.y + 1 if self.cell.y < 4 else self.cell.y), self.cell.x)
+        n = self.cell.board.get_cell(self.cell.y, self.cell.x - 1 if target.x < self.cell.x else
+                                     (self.cell.x + 1 if self.cell.x < 4 else self.cell.x))
+        c = [i for i in (m, n) if not i.chip]
+        if not c:
+            if self.cell.x:
+                c.append(self.cell.board.get_cell(self.cell.y, self.cell.x - 1))
+            if self.cell.y:
+                c.append(self.cell.board.get_cell(self.cell.y - 1, self.cell.x))
+
+        for choice in c:
+            d_x = target.x - choice.x
+            d_y = target.y - choice.y
+            sign_x = int(abs(d_x) / d_x) if d_x != 0 else 0
+            sign_y = int(abs(d_y) / d_y) if d_y != 0 else 0
+            for i in range(1, abs(d_x) + 1):
+                if self.cell.board.get_cell(choice.y, choice.x + i * sign_x).chip:
+                    break
+            else:
+                for i in range(1, abs(d_y)):
+                    if self.cell.board.get_cell(choice.y + i * sign_y, target.x).chip:
+                        break
+                else:
+                    return True
+            for i in range(1, abs(d_y) + 1):
+                if self.cell.board.get_cell(choice.y + i * sign_y, choice.x).chip:
+                    break
+            else:
+                for i in range(1, abs(d_x)):
+                    if self.cell.board.get_cell(target.y, choice.x + i * sign_x).chip:
+                        break
+                else:
+                    return True
+        return False
 
     def move_figure(self, e):
         mx, my = self.cell.board.absolute_coordinates()
