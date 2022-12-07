@@ -27,11 +27,12 @@ class Chip:
                                      (self.cell.y + 1 if self.cell.y < 4 else self.cell.y), self.cell.x)
         n = self.cell.board.get_cell(self.cell.y, self.cell.x - 1 if target.x < self.cell.x else
                                      (self.cell.x + 1 if self.cell.x < 4 else self.cell.x))
+
         c = [i for i in (m, n) if not i.chip]
         if not c:
-            if self.cell.x:
+            if self.cell.x and not self.cell.board.get_cell(self.cell.y, self.cell.x - 1).chip:
                 c.append(self.cell.board.get_cell(self.cell.y, self.cell.x - 1))
-            if self.cell.y:
+            if self.cell.y and not self.cell.board.get_cell(self.cell.y - 1, self.cell.x).chip:
                 c.append(self.cell.board.get_cell(self.cell.y - 1, self.cell.x))
 
         for choice in c:

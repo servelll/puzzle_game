@@ -4,11 +4,20 @@ from params import *
 from Board import *
 from Cell import *
 from Chip import *
+import sys
+import os
 
 
 def close_game():
     if messagebox.askokcancel("Quit the game", "Are you sure to leave the game?"):
         tk.destroy()
+
+
+def resource_path(relative):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative)
+    else:
+        return os.path.join(os.path.abspath("."), relative)
 
 
 # Graphic
@@ -17,7 +26,7 @@ tk.resizable(width=False, height=False)
 tk.title("Sliding puzzle mini-game")
 tk.protocol("WM_DELETE_WINDOW", close_game)
 # tk.wm_attributes('-transparentcolor', '#AD999E')
-image = Image.open("board_bg.PNG")
+image = Image.open(resource_path("board_bg.PNG"))
 width = int(2.3 * BOARD_SIZE * BLOCK_SIZE)
 ratio = (width / float(image.size[0]))
 height = int((float(image.size[1]) * float(ratio)))
